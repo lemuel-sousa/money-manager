@@ -1,5 +1,46 @@
-# Ignore Gradle project-specific cache directory
-.gradle
+# Gradle
+.gradle/
+build/
 
-# Ignore Gradle build output directory
-build
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Eclipse
+.settings/
+.classpath
+.project
+
+# Intellij
+out/
+
+# Compiled files
+*.class
+
+# Logs
+*.log
+log/
+logs/
+
+# Maven
+target/
+pom.xml.*
+*.jar
+target/
+
+# Dependencies
+lib/
+libs/
+*.jar
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
