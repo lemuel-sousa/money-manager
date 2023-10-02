@@ -1,4 +1,4 @@
-package money.manager.domain.type;
+package money.manager.domain.activity.type;
 
 public enum ActivityType {
 

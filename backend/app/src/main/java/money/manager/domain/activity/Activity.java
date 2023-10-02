@@ -1,9 +1,10 @@
 package money.manager.domain.activity;
 
 import java.time.Instant;
-
+import money.manager.domain.activity.type.ActivityType;
 import money.manager.domain.exception.DomainException;
-import money.manager.domain.type.ActivityType;
+import money.manager.utils.InstantUtils;
+import money.manager.utils.UUIDUtils;
 
 public class Activity {
 
@@ -30,6 +31,26 @@ public class Activity {
     this.validate();
   }
 
+  public static Activity newActivity(final String aDescription, final Instant aDate, final float aValue,
+      final ActivityType aType) {
+
+    return new Activity(
+        UUIDUtils.generate(),
+        aDescription,
+        aDate,
+        aValue,
+        aType,
+        InstantUtils.now(),
+        InstantUtils.now());
+  }
+
+  public static Activity with(final String anId, final String aDescription,
+      final Instant aDate, final float aValue, final ActivityType aType,
+      final Instant aCreatedAt, final Instant anUpdatedAt) {
+
+    return new Activity(anId, aDescription, aDate, aValue, aType, aCreatedAt, anUpdatedAt);
+  }
+
   private void validate() {
     if (this.id.isBlank()) {
       throw new DomainException("Activity's ID should not be blank.");
@@ -43,12 +64,64 @@ public class Activity {
     if (this.description.length() < 3) {
       throw new DomainException("Activity's description must have more than 3 characters.");
     }
-    if (this.value < 0.01) {
-      throw new DomainException("Activity's value must not be less than 0.01.");
-    }
     if (this.type != ActivityType.REVENUE && this.type != ActivityType.EXPENSE) {
       throw new DomainException("Activity's type should be reveneu or expense.");
     }
   }
 
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public Instant getDate() {
+    return date;
+  }
+
+  public void setDate(Instant date) {
+    this.date = date;
+  }
+
+  public float getValue() {
+    return value;
+  }
+
+  public void setValue(float value) {
+    this.value = value;
+  }
+
+  public ActivityType getType() {
+    return type;
+  }
+
+  public void setType(ActivityType type) {
+    this.type = type;
+  }
+
+  public Instant getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(Instant createdAt) {
+    this.createdAt = createdAt;
+  }
+
+  public Instant getUpdatedAt() {
+    return updatedAt;
+  }
+
+  public void setUpdatedAt(Instant updatedAt) {
+    this.updatedAt = updatedAt;
+  }
 }
