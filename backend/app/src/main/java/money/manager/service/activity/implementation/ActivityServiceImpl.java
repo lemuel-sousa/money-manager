@@ -1,4 +1,4 @@
-package money.manager.service.implementation;
+package money.manager.service.activity.implementation;
 
 import java.util.List;
 
