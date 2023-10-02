@@ -7,9 +7,7 @@ import money.manager.domain.gateway.ActivityGateway;
 import money.manager.service.activity.ActivityService;
 import money.manager.service.activity.dto.ActivityInputDto;
 import money.manager.service.activity.dto.ActivityOutputDto;
-import money.manager.service.activity.dto.ListActivitiesOutputDto;
 import money.manager.service.activity.dto.mapper.ActivityInputToActivityMapper;
-import money.manager.service.activity.dto.mapper.ActivityOutputToListActivitiesOutputMapper;
 import money.manager.service.activity.dto.mapper.ActivityToActivityOutputDtoMapper;
 import money.manager.service.activity.dto.mapper.ListActivitiesToListActivitiesOutputMapper;
 
