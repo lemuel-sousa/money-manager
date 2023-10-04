@@ -17,8 +17,8 @@ public class ActivityJpaEntity {
   @Id
   @Column(name = "id", nullable = false)
   private String id;
-  @Column(name = "descrtiption", nullable = false)
-  private String descrtiption;
+  @Column(name = "description", nullable = false)
+  private String description;
   @Column(name = "date", nullable = false)
   private Instant date;
   @Column(name = "value", nullable = false)
@@ -34,10 +34,10 @@ public class ActivityJpaEntity {
 
   }
 
-  private ActivityJpaEntity(final String anId, final String aDescrtiption, final Instant aDate,
+  private ActivityJpaEntity(final String anId, final String aDescription, final Instant aDate,
       final Float aValue, final Integer aType, final Instant aCreatedAt, final Instant anUpdatedAt) {
     this.id = anId;
-    this.descrtiption = aDescrtiption;
+    this.description = aDescription;
     this.date = aDate;
     this.value = aValue;
     this.type = aType;
@@ -83,11 +83,11 @@ public class ActivityJpaEntity {
   }
 
   public String getDescrtiption() {
-    return descrtiption;
+    return description;
   }
 
   public void setDescrtiption(String descrtiption) {
-    this.descrtiption = descrtiption;
+    this.description = descrtiption;
   }
 
   public Instant getDate() {
