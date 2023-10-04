@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import money.manager.api.controller.activity.dto.CalculateBalanceResponseDto;
 import money.manager.api.controller.activity.dto.InsertActivityRequestDto;
 import money.manager.api.controller.activity.dto.InsertActivityResponseDto;
 import money.manager.api.controller.activity.dto.ListActivitiesResponseDto;
@@ -60,7 +61,18 @@ public class ActivityController {
 
     aService.removeActivity(id);
 
-    return ResponseEntity.ok().build();
+    return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("balance")
+  public ResponseEntity<CalculateBalanceResponseDto> calculateBalance() {
+    final var aGateway = ActivityJpaGateway.build(activityRepository);
+    final var aService = ActivityServiceImpl.build(aGateway);
+
+    final var aServiceResponse = aService.calculateBalance();
+    final var aResponse = new CalculateBalanceResponseDto(aServiceResponse);
+
+    return ResponseEntity.ok().body(aResponse);
   }
 
 }
