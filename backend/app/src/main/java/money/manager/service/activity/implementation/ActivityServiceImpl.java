@@ -19,6 +19,10 @@ public class ActivityServiceImpl implements ActivityService {
     this.activityGateway = aGateway;
   }
 
+  public static ActivityServiceImpl build(final ActivityGateway aGateway) {
+    return new ActivityServiceImpl(aGateway);
+  }
+
   @Override
   public ActivityOutputDto insertActivity(final ActivityInputDto anInput) {
     final var anActivity = ActivityInputToActivityMapper.build()
