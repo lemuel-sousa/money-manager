@@ -1,4 +1,4 @@
-sercer:
+server:
   port: 8000
 
 spring:
