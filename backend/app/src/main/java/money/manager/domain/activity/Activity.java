@@ -62,10 +62,13 @@ public class Activity {
       throw new DomainException("Activity's description should not be blank.");
     }
     if (this.description.length() < 3) {
-      throw new DomainException("Activity's description must have more than 3 characters.");
+      throw new DomainException("Activity's description must not have less than 3 characters.");
     }
     if (this.type != ActivityType.REVENUE && this.type != ActivityType.EXPENSE) {
       throw new DomainException("Activity's type should be reveneu or expense.");
+    }
+    if (this.value < 0.01) {
+      throw new DomainException("Activity's value should not be lees than 0.01.");
     }
   }
 
