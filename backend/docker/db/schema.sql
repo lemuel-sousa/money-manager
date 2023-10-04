@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS activities(
+  id VARCHAR(36) NOT NULL PRIMARY KEY,
+  description VARCHAR(80) NOT NULL,
+  date DATETIME(5) NOT NULL,
+  value FLOAT NOT NULL,
+  type SMALLINT NOT NULL,
+  created_at DATETIME(6) NOT NULL,
+  updated_at DATETIME(6) NOT NULL
+);
