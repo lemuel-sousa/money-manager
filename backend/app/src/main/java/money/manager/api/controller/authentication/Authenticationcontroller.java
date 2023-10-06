@@ -14,7 +14,6 @@ import money.manager.api.controller.authentication.dto.ValidateResponseDto;
 import money.manager.api.controller.authentication.dto.ValidateRquestDto;
 import money.manager.api.controller.authentication.dto.mapper.LoginRequestToLoginServiceInputMapper;
 import money.manager.api.controller.authentication.dto.mapper.ValidateRequestToValidateServiceInputMapper;
-import money.manager.api.controller.authentication.dto.mapper.ValidateServiceOutputToValidateResponseMapper;
 import money.manager.service.auth.AuthService;
 
 @RestController
@@ -39,9 +38,9 @@ public class Authenticationcontroller {
     final var aServiceOutput = this.authService.validateToken(
         ValidateRequestToValidateServiceInputMapper.build().apply(input));
 
-    final var aResponse = ValidateServiceOutputToValidateResponseMapper.build().apply(aServiceOutput);
+    final var aValidate = this.authService.isValid(aServiceOutput);
 
-    return ResponseEntity.ok().body(aResponse);
+    return ResponseEntity.ok().body(new ValidateResponseDto(aValidate));
   }
 
 }
