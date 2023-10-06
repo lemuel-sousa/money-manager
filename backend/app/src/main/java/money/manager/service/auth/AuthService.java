@@ -1,5 +1,8 @@
 package money.manager.service.auth;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.JWT;
@@ -16,14 +19,13 @@ import money.manager.domain.user.User;
 import money.manager.service.auth.dto.LoginInputDto;
 import money.manager.service.auth.dto.LoginOutputDto;
 import money.manager.service.auth.dto.ValidateServiceInputDto;
-import money.manager.service.auth.dto.ValidateServiceOutputDto;
 import money.manager.service.auth.exception.AuthenticationException;
 import money.manager.service.auth.exception.LoginException;
 import money.manager.service.auth.exception.ValidateException;
 import money.manager.utils.InstantUtils;
 
 @Service
-public class AuthService {
+public class AuthService implements UserDetailsService {
 
   final User uniqueUser = User.with("user@example.com", "123456");
 
@@ -61,7 +63,7 @@ public class AuthService {
     }
   }
 
-  public ValidateServiceOutputDto validateToken(final ValidateServiceInputDto input) {
+  public String validateToken(final ValidateServiceInputDto input) {
     try {
       // validates if the token siganrure corresponds with the siganrure algorithm and
       // password
@@ -72,13 +74,8 @@ public class AuthService {
 
       // decodes the token
       final var aDecodedToken = aVerifier.verify(input.token());
-      final var aSubject = aDecodedToken.getSubject();
 
-      if (!aSubject.isBlank()) {
-        return new ValidateServiceOutputDto(true);
-      } else {
-        throw new ValidateException("invalid token.");
-      }
+      return aDecodedToken.getSubject();
     } catch (IllegalArgumentException e) {
       throw new AuthenticationException(e.getMessage());
     } catch (AlgorithmMismatchException e) {
@@ -93,6 +90,23 @@ public class AuthService {
       throw new AuthenticationException(e.getMessage());
     } catch (JWTVerificationException e) {
       throw new AuthenticationException(e.getMessage());
+    }
+  }
+
+  public boolean isValid(final String aSubjectToken) {
+    if (!aSubjectToken.isBlank()) {
+      return true;
+    } else {
+      throw new ValidateException("invalid token.");
+    }
+  }
+
+  @Override
+  public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
+    if (username.equals(this.uniqueUser.getUsername())) {
+      return this.uniqueUser;
+    } else {
+      throw new UsernameNotFoundException("User not found.");
     }
   }
 }
