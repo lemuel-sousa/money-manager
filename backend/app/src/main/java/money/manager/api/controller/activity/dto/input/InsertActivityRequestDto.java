@@ -1,4 +1,4 @@
-package money.manager.api.controller.activity.dto;
+package money.manager.api.controller.activity.dto.input;
 
 import java.time.Instant;
 
