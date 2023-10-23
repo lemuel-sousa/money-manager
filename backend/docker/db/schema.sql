@@ -1,9 +1,20 @@
+
+-- Activities table
 CREATE TABLE IF NOT EXISTS activities(
-  id VARCHAR(36) NOT NULL PRIMARY KEY,
-  description VARCHAR(80) NOT NULL,
+  id VARCHAR(36) NOT NULL UNIQUE PRIMARY KEY,
+  description TEXT NOT NULL,
   date DATETIME(5) NOT NULL,
   value FLOAT NOT NULL,
   type SMALLINT NOT NULL,
   created_at DATETIME(6) NOT NULL,
   updated_at DATETIME(6) NOT NULL
+);
+
+
+-- User table
+CREATE TABLE IF NOT EXISTS users (
+  id VARCHAR(36) NOT NULL UNIQUE PRIMARY KEY,
+  username VARCHAR(255) NOT NULL UNIQUE,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password TEXT NOT NULL
 );
