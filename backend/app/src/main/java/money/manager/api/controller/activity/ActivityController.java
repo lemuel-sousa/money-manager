@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import money.manager.api.controller.activity.dto.CalculateBalanceResponseDto;
-import money.manager.api.controller.activity.dto.InsertActivityRequestDto;
-import money.manager.api.controller.activity.dto.InsertActivityResponseDto;
-import money.manager.api.controller.activity.dto.ListActivitiesResponseDto;
-import money.manager.api.controller.activity.dto.mapper.ActivityOutputToInsertActivityResponse;
+import money.manager.api.controller.activity.dto.input.InsertActivityRequestDto;
+import money.manager.api.controller.activity.dto.mapper.ActivityOutputToInsertActivityResponseMapper;
 import money.manager.api.controller.activity.dto.mapper.ActivityRequestToActivityInputMapper;
 import money.manager.api.controller.activity.dto.mapper.ListActivitiesServiceToListActivitiesResponseMapper;
+import money.manager.api.controller.activity.dto.output.CalculateBalanceResponseDto;
+import money.manager.api.controller.activity.dto.output.InsertActivityResponseDto;
+import money.manager.api.controller.activity.dto.output.ListActivitiesResponseDto;
 import money.manager.repository.activity.ActivityJpaGateway;
 import money.manager.repository.activity.jpa.ActivityJpaRepository;
 import money.manager.service.activity.implementation.ActivityServiceImpl;
@@ -38,7 +38,7 @@ public class ActivityController {
     final var aResponse = ListActivitiesServiceToListActivitiesResponseMapper
         .build().apply(aList);
 
-    return ResponseEntity.ok().body(aResponse);
+    return ResponseEntity.ok(aResponse);
   }
 
   @PostMapping
@@ -49,9 +49,9 @@ public class ActivityController {
 
     final var aServiceInput = ActivityRequestToActivityInputMapper.build().apply(input);
     final var aServiceResponse = aService.insertActivity(aServiceInput);
-    final var aResponse = ActivityOutputToInsertActivityResponse.build().apply(aServiceResponse);
+    final var aResponse = ActivityOutputToInsertActivityResponseMapper.build().apply(aServiceResponse);
 
-    return ResponseEntity.ok().body(aResponse);
+    return ResponseEntity.ok(aResponse);
   }
 
   @DeleteMapping("{id}")
@@ -72,7 +72,7 @@ public class ActivityController {
     final var aServiceResponse = aService.calculateBalance();
     final var aResponse = new CalculateBalanceResponseDto(aServiceResponse);
 
-    return ResponseEntity.ok().body(aResponse);
+    return ResponseEntity.ok(aResponse);
   }
 
 }
