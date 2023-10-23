@@ -5,108 +5,64 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.AlgorithmMismatchException;
-import com.auth0.jwt.exceptions.IncorrectClaimException;
-import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.exceptions.MissingClaimException;
-import com.auth0.jwt.exceptions.SignatureVerificationException;
-import com.auth0.jwt.exceptions.TokenExpiredException;
-
-import money.manager.domain.user.User;
-import money.manager.service.auth.dto.LoginInputDto;
-import money.manager.service.auth.dto.LoginOutputDto;
-import money.manager.service.auth.dto.ValidateServiceInputDto;
-import money.manager.service.auth.exception.AuthenticationException;
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import money.manager.domain.gateway.UserGateway;
+import money.manager.service.auth.dto.input.LoginServiceInputDto;
+import money.manager.service.auth.dto.input.RegisterUserServiceInputDto;
+import money.manager.service.auth.dto.mapper.RegisterUserServiceInputToUserMapper;
+import money.manager.service.auth.dto.mapper.UserToRegisterUserServiceOutputMapper;
+import money.manager.service.auth.dto.output.LoginServiceOutputDto;
+import money.manager.service.auth.dto.output.RegisterUserServiceOutputDto;
 import money.manager.service.auth.exception.LoginException;
-import money.manager.service.auth.exception.ValidateException;
-import money.manager.utils.InstantUtils;
+import money.manager.service.exception.ServiceException;
 
 @Service
 public class AuthService implements UserDetailsService {
 
-  final User uniqueUser = User.with("user@example.com", "123456");
+  private UserGateway userGateway;
+  private TokenService tokenService;
 
-  private final String TOKEN_SECRET = "12345689";
-  private final String TOKEN_ISSUER = "money.manager";
-
-  public LoginOutputDto login(final LoginInputDto input) {
-
-    final var anUser = User.with(input.email(), input.password());
-
-    if (!uniqueUser.getEmail().equals(anUser.getEmail())
-        || !uniqueUser.getPassword().equals(anUser.getPassword())) {
-      throw new LoginException("User or password not found");
-    }
-
-    final var aToken = this.createToken(anUser);
-
-    return new LoginOutputDto(aToken);
+  private AuthService(final UserGateway aGateway, final TokenService aTokenService) {
+    this.userGateway = aGateway;
+    this.tokenService = aTokenService;
   }
 
-  private String createToken(final User anUser) {
-    try {
-      final var anAlgorithm = Algorithm.HMAC256(TOKEN_SECRET);
-      final var aToken = JWT.create()
-          .withIssuer(TOKEN_ISSUER)
-          .withSubject(anUser.getEmail())
-          .withExpiresAt(InstantUtils.now().plusSeconds(60 * 60 * 4))
-          .sign(anAlgorithm);
-
-      return aToken;
-    } catch (IllegalArgumentException e) {
-      throw new AuthenticationException(e.getMessage());
-    } catch (JWTCreationException e) {
-      throw new AuthenticationException(e.getMessage());
-    }
+  public static AuthService build(final UserGateway aGateway, final TokenService aTokenService) {
+    return new AuthService(aGateway, aTokenService);
   }
 
-  public String validateToken(final ValidateServiceInputDto input) {
-    try {
-      // validates if the token siganrure corresponds with the siganrure algorithm and
-      // password
-      final var anAlgorithm = Algorithm.HMAC256(TOKEN_SECRET);
-      final var aVerifier = JWT.require(anAlgorithm)
-          .withIssuer(TOKEN_ISSUER)
-          .build();
+  public LoginServiceOutputDto login(final LoginServiceInputDto anInput) {
+    final var aUser = this.loadUserByUsername(anInput.username());
 
-      // decodes the token
-      final var aDecodedToken = aVerifier.verify(input.token());
+    final var aPasswordVerify = BCrypt.verifyer().verify(anInput.password().toCharArray(), aUser.getPassword());
 
-      return aDecodedToken.getSubject();
-    } catch (IllegalArgumentException e) {
-      throw new AuthenticationException(e.getMessage());
-    } catch (AlgorithmMismatchException e) {
-      throw new AuthenticationException(e.getMessage());
-    } catch (SignatureVerificationException e) {
-      throw new AuthenticationException(e.getMessage());
-    } catch (TokenExpiredException e) {
-      throw new AuthenticationException(e.getMessage());
-    } catch (MissingClaimException e) {
-      throw new AuthenticationException(e.getMessage());
-    } catch (IncorrectClaimException e) {
-      throw new AuthenticationException(e.getMessage());
-    } catch (JWTVerificationException e) {
-      throw new AuthenticationException(e.getMessage());
-    }
+    if (!aPasswordVerify.verified)
+      throw new LoginException("Invalid user.");
+
+    final var aNewToken = this.tokenService.createToken(aUser);
+    
+    return new LoginServiceOutputDto(aNewToken.toString());
   }
 
-  public boolean isValid(final String aSubjectToken) {
-    if (!aSubjectToken.isBlank()) {
-      return true;
-    } else {
-      throw new ValidateException("invalid token.");
-    }
+  public RegisterUserServiceOutputDto register(final RegisterUserServiceInputDto anInput) {
+    if (this.userGateway.findByUsername(anInput.getUsername()) != null)
+      throw new ServiceException(
+          String.format("A user with the username '%s' already exists. ", anInput.getUsername()));
+
+    final var aUser = RegisterUserServiceInputToUserMapper.build().apply(anInput);
+
+    this.userGateway.save(aUser);
+
+    return UserToRegisterUserServiceOutputMapper.build().apply(aUser);
   }
 
   @Override
-  public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
-    if (username.equals(this.uniqueUser.getUsername())) {
-      return this.uniqueUser;
-    } else {
-      throw new UsernameNotFoundException("User not found.");
-    }
+  public UserDetails loadUserByUsername(final String aUsername) throws UsernameNotFoundException {
+    final var aUser = this.userGateway.findByUsername(aUsername);
+
+    if (aUser == null)
+      throw new UsernameNotFoundException("User not found");
+
+    return aUser;
   }
 }
