@@ -8,39 +8,52 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
-import money.manager.api.controller.authentication.dto.LoginRequestDto;
-import money.manager.api.controller.authentication.dto.LoginResponseDto;
-import money.manager.api.controller.authentication.dto.ValidateResponseDto;
-import money.manager.api.controller.authentication.dto.ValidateRquestDto;
+import money.manager.api.controller.authentication.dto.input.LoginRequestDto;
+import money.manager.api.controller.authentication.dto.input.RegisterUserRequestDto;
 import money.manager.api.controller.authentication.dto.mapper.LoginRequestToLoginServiceInputMapper;
-import money.manager.api.controller.authentication.dto.mapper.ValidateRequestToValidateServiceInputMapper;
+import money.manager.api.controller.authentication.dto.mapper.LoginServiceOutputToLoginResponseMapper;
+import money.manager.api.controller.authentication.dto.mapper.RegisterUserRequestToRegisterUserServiceInputMapper;
+import money.manager.api.controller.authentication.dto.mapper.RegisterUserServiceOutputToRegisterUserResponseMapper;
+import money.manager.api.controller.authentication.dto.output.LoginResponseDto;
+import money.manager.api.controller.authentication.dto.output.RegisterUserResponseDto;
+import money.manager.repository.user.UserJpaGateway;
+import money.manager.repository.user.jpa.UserJpaRepository;
 import money.manager.service.auth.AuthService;
+import money.manager.service.auth.implementation.TokenServiceImpl;
 
 @RestController
 @RequestMapping("/auth")
 public class Authenticationcontroller {
 
   @Autowired
-  private AuthService authService;
+  private UserJpaRepository userRepository;
 
   @PostMapping("login")
   public ResponseEntity<LoginResponseDto> login(@RequestBody @Valid final LoginRequestDto input) {
-    final var aToken = authService.login(LoginRequestToLoginServiceInputMapper
-        .build().apply(input)).token();
+    final var aGateway = UserJpaGateway.build(userRepository);
+    final var aTokenService = TokenServiceImpl.build();
+    final var aService = AuthService.build(aGateway, aTokenService);
 
-    final var aTokenResponse = new LoginResponseDto(aToken);
+    final var aServiceInput = LoginRequestToLoginServiceInputMapper.build().apply(input);
 
-    return ResponseEntity.ok().body(aTokenResponse);
+    final var aServiceOutput = aService.login(aServiceInput);
+    final var aResponse = LoginServiceOutputToLoginResponseMapper.build().apply(aServiceOutput);
+
+    return ResponseEntity.ok(aResponse);
   }
 
-  @PostMapping("validate")
-  public ResponseEntity<ValidateResponseDto> validate(@RequestBody @Valid final ValidateRquestDto input) {
-    final var aServiceOutput = this.authService.validateToken(
-        ValidateRequestToValidateServiceInputMapper.build().apply(input));
+  @PostMapping("register")
+  public ResponseEntity<RegisterUserResponseDto> register(@RequestBody @Valid final RegisterUserRequestDto input) {
+    final var aGateway = UserJpaGateway.build(userRepository);
+    final var aTokenService = TokenServiceImpl.build();
+    final var aService = AuthService.build(aGateway, aTokenService);
 
-    final var aValidate = this.authService.isValid(aServiceOutput);
+    final var anInput = RegisterUserRequestToRegisterUserServiceInputMapper.build().apply(input);
 
-    return ResponseEntity.ok().body(new ValidateResponseDto(aValidate));
+    final var aServiceOutput = aService.register(anInput);
+    final var aResponse = RegisterUserServiceOutputToRegisterUserResponseMapper.build().apply(aServiceOutput);
+
+    return ResponseEntity.ok(aResponse);
   }
 
 }
