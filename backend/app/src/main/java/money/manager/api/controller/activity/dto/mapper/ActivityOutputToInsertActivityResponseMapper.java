@@ -2,13 +2,13 @@ package money.manager.api.controller.activity.dto.mapper;
 
 import java.util.function.Function;
 
-import money.manager.api.controller.activity.dto.InsertActivityResponseDto;
+import money.manager.api.controller.activity.dto.output.InsertActivityResponseDto;
 import money.manager.service.activity.dto.ActivityOutputDto;
 
-public class ActivityOutputToInsertActivityResponse implements Function<ActivityOutputDto, InsertActivityResponseDto> {
+public class ActivityOutputToInsertActivityResponseMapper implements Function<ActivityOutputDto, InsertActivityResponseDto> {
 
-  public static ActivityOutputToInsertActivityResponse build() {
-    return new ActivityOutputToInsertActivityResponse();
+  public static ActivityOutputToInsertActivityResponseMapper build() {
+    return new ActivityOutputToInsertActivityResponseMapper();
   }
 
   @Override

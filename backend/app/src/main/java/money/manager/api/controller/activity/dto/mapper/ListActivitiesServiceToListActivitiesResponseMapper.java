@@ -3,8 +3,8 @@ package money.manager.api.controller.activity.dto.mapper;
 import java.util.List;
 import java.util.function.Function;
 
-import money.manager.api.controller.activity.dto.ActivityResponseDto;
-import money.manager.api.controller.activity.dto.ListActivitiesResponseDto;
+import money.manager.api.controller.activity.dto.output.ActivityResponseDto;
+import money.manager.api.controller.activity.dto.output.ListActivitiesResponseDto;
 import money.manager.service.activity.dto.ActivityOutputDto;
 
 public class ListActivitiesServiceToListActivitiesResponseMapper
