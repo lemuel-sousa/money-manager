@@ -41,7 +41,7 @@ public class AuthService implements UserDetailsService {
 
     final var aNewToken = this.tokenService.createToken(aUser);
     
-    return new LoginServiceOutputDto(aNewToken.toString());
+    return new LoginServiceOutputDto(aNewToken.token());
   }
 
   public RegisterUserServiceOutputDto register(final RegisterUserServiceInputDto anInput) {
