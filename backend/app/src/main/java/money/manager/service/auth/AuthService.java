@@ -37,7 +37,7 @@ public class AuthService implements UserDetailsService {
     final var aPasswordVerify = BCrypt.verifyer().verify(anInput.password().toCharArray(), aUser.getPassword());
 
     if (!aPasswordVerify.verified)
-      throw new LoginException("Invalid user.");
+      throw new LoginException("Incorrect password.");
 
     final var aNewToken = this.tokenService.createToken(aUser);
     
