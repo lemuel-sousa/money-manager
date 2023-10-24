@@ -38,26 +38,19 @@ Make sure that you have installed [JRE or JDK](https://www.oracle.com/java/techn
 
 ### Installing
 **Clone the Money Manager**
-
-
 ```
 https://github.com/lemuel-sousa/money-manager.git
 ```
-
 Enter the ```backend/``` folder and then go up database
-
 ```
 cd backend
 docker-compose -f docker/docker-compose.yml up -d
 ```
-
 **Build the project**
-
 ```
 ./gradlew clean build
 ```
 **Start the application**
-
 ```
 java -jar app/build/libs/app.jar
 ```
@@ -68,26 +61,24 @@ The API can be accessed at [localhost:8000](http://localhost:8000/).
 ### Endpoints
 To make the HTTP requests below, the tool [HTTPie](https://httpie.io/cli) was used.
 
-**Login unique user**
-
+**Register a user**
 ```
-$ http POST :8000/auth/login email="user@example.com" password="123456"
+$ http POST :8000/auth/register username="User Example" email="user@example.com" password="123456"
+
+    "email": "user@example.com",
+    "id": "faa23c0e-92ef-4a18-ac9a-05df8ca5287e",
+    "password": "$2a$12$zSzAKO2kxRKWe78aZe/bSeE4llRBRizkwA/MdZnWyz8FkrnLaqtAO",
+    "username": "User Example"
+```
+
+**Login**
+```
+$ http POST :8000/auth/login username="User Example" password="123456"
 
 {
     "token": "TOKEN"
 }
 ```
-
-**Validate token**
-
-```
-$ http POST :8000/auth/validate token="TOKEN"
-
-{
-    "is_valid": true|false
-}
-```
-
 **Create a cash Activity**
 
 
@@ -152,10 +143,11 @@ Development practices such as:
 * Tratment of error responses
 
 ## ⛏️ Built Using <a name = "built_using"></a>
-- [Spring Boot](https://spring.io) - Server Framework
+- [Spring Boot](https://spring.io) - Web Framework
 - [Java](https://www.java.com) - Programming Language
 - [Mysql](https://www.mysql.com) - Database
 - [Docker](https://docs.docker.com/get-started/) - Containerization
+- [JWT](https://jwt.io) - Json Web Tokens
 
 
 
