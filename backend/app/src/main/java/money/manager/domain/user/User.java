@@ -18,12 +18,12 @@ public class User implements UserDetails {
   private String password;
 
   private User(final String anId, final String aUsername, final String anEmail, final String aPassword) {
-
+    
     this.username = aUsername;
     this.email = anEmail;
     this.password = aPassword;
     this.id = anId;
-
+    
     this.validate();
   }
 
@@ -50,7 +50,7 @@ public class User implements UserDetails {
       throw new DomainException("User e-mail should not be blank.");
 
     if (this.password.isBlank())
-      throw new DomainException("User password should not be blank");
+      throw new DomainException("User password should not be blank.");
 
     if (this.password.length() < 6)
       throw new DomainException("User password shoud be at least 5 characters.");
