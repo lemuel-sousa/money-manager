@@ -14,8 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import money.manager.config.security.filter.exception.SecurityFilterException;
 import money.manager.service.auth.AuthService;
+import money.manager.service.auth.TokenService;
 import money.manager.service.auth.dto.input.TokenServiceInputDto;
-import money.manager.service.auth.implementation.TokenServiceImpl;
 
 @Component
 public class SecurityFilter extends OncePerRequestFilter {
@@ -24,7 +24,7 @@ public class SecurityFilter extends OncePerRequestFilter {
   private AuthService authService;
 
   @Autowired
-  private TokenServiceImpl tokenService;
+  private TokenService tokenService;
 
   @Override
   protected void doFilterInternal(final HttpServletRequest request,
@@ -36,13 +36,13 @@ public class SecurityFilter extends OncePerRequestFilter {
         final var aToken = anAuthHeader.replace("Bearer ", "");
         final var aTokenInput = new TokenServiceInputDto(aToken);
 
-        final var aUsername = this.tokenService.validateToken(aTokenInput);
-        final var aUser = this.authService.loadUserByUsername(aUsername.subject());
-
+        final var aTokenSubject = this.tokenService.validateToken(aTokenInput);
+        final var aUsername = this.authService.loadUserByUsername(aTokenSubject.subject());
+        
         final var auth = new UsernamePasswordAuthenticationToken(
-            aUser,
+            aUsername,
             null,
-            aUser.getAuthorities());
+            aUsername.getAuthorities());
 
         SecurityContextHolder.getContext().setAuthentication(auth);
       }
