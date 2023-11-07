@@ -13,3 +13,10 @@ spring:
     open-in-view: false
 
 api.token: ${TOKEN_SECRET:token-secret}
+
+springdoc:
+  api-docs:
+    path: /api-docs # Specify the path of the OpenAPI documentation
+  swagger-ui:
+    path: /swagger-ui.html # Specify the path of the Swagger UI
+  enabled: true # Enable or disable Swagger UI
