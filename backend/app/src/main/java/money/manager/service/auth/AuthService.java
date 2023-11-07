@@ -5,7 +5,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import at.favre.lib.crypto.bcrypt.BCrypt;
 import money.manager.domain.gateway.UserGateway;
 import money.manager.service.auth.dto.input.LoginServiceInputDto;
 import money.manager.service.auth.dto.input.RegisterUserServiceInputDto;
@@ -15,6 +14,7 @@ import money.manager.service.auth.dto.output.LoginServiceOutputDto;
 import money.manager.service.auth.dto.output.RegisterUserServiceOutputDto;
 import money.manager.service.auth.exception.LoginException;
 import money.manager.service.exception.ServiceException;
+import money.manager.utils.BCryptUtils;
 
 @Service
 public class AuthService implements UserDetailsService {
@@ -34,7 +34,7 @@ public class AuthService implements UserDetailsService {
   public LoginServiceOutputDto login(final LoginServiceInputDto anInput) {
     final var aUser = this.loadUserByUsername(anInput.username());
 
-    final var aPasswordVerify = BCrypt.verifyer().verify(anInput.password().toCharArray(), aUser.getPassword());
+    final var aPasswordVerify = BCryptUtils.passwordVerify(anInput.password(), aUser.getPassword());
 
     if (!aPasswordVerify.verified)
       throw new LoginException("Incorrect password.");
@@ -52,8 +52,10 @@ public class AuthService implements UserDetailsService {
     final var aUser = RegisterUserServiceInputToUserMapper.build().apply(anInput);
 
     this.userGateway.save(aUser);
-
-    return UserToRegisterUserServiceOutputMapper.build().apply(aUser);
+    
+    final var anOutput = UserToRegisterUserServiceOutputMapper.build().apply(aUser);
+    
+    return anOutput;
   }
 
   @Override
