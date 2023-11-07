@@ -10,12 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import money.manager.api.controller.authentication.dto.input.LoginRequestDto;
 import money.manager.api.controller.authentication.dto.input.RegisterUserRequestDto;
+import money.manager.api.controller.authentication.dto.input.TokenRequestDto;
 import money.manager.api.controller.authentication.dto.mapper.LoginRequestToLoginServiceInputMapper;
 import money.manager.api.controller.authentication.dto.mapper.LoginServiceOutputToLoginResponseMapper;
 import money.manager.api.controller.authentication.dto.mapper.RegisterUserRequestToRegisterUserServiceInputMapper;
 import money.manager.api.controller.authentication.dto.mapper.RegisterUserServiceOutputToRegisterUserResponseMapper;
+import money.manager.api.controller.authentication.dto.mapper.TokenRequestToTokenServiceInputMapper;
+import money.manager.api.controller.authentication.dto.mapper.ValidateTokenServiceOutputToValidateTokenResponseMapper;
 import money.manager.api.controller.authentication.dto.output.LoginResponseDto;
 import money.manager.api.controller.authentication.dto.output.RegisterUserResponseDto;
+import money.manager.api.controller.authentication.dto.output.ValidateTokenResponseDto;
 import money.manager.repository.user.UserJpaGateway;
 import money.manager.repository.user.jpa.UserJpaRepository;
 import money.manager.service.auth.AuthService;
@@ -56,4 +60,16 @@ public class Authenticationcontroller {
     return ResponseEntity.ok(aResponse);
   }
 
+
+  @PostMapping("validate")
+  public ResponseEntity<ValidateTokenResponseDto> validate(final @RequestBody @Valid TokenRequestDto input) {
+    final var aService = TokenServiceImpl.build();
+
+    final var aServiceInput = TokenRequestToTokenServiceInputMapper.build().apply(input);
+    final var aServiceOutput =  aService.recoverValidation(aServiceInput);
+
+    final var aResponse = ValidateTokenServiceOutputToValidateTokenResponseMapper.build().apply(aServiceOutput);
+
+    return ResponseEntity.ok(aResponse);
+  }
 }
